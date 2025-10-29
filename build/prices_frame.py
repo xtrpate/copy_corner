@@ -1,15 +1,11 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Button, PhotoImage, messagebox
+from tkinter import Canvas, Button, PhotoImage, messagebox
 import tkinter as tk
-import subprocess
-import sys
-from utils import get_db_connection, round_rectangle
 
-# Import the main frame class we need to return to
 from printer_frame import PrinterFrame
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"D:\downloadss\New folder\Tkinter\Tkinter-Designer-master\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / "assets" / "frame0"
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -53,7 +49,7 @@ class PricesFrame(tk.Frame):
 
         canvas.create_text(38.0, 81.0, anchor="nw", text="TEXT WITH PICTURE", fill="#FF9400", font=("Inter Bold", -32))
         canvas.create_text(498.0, 81.0, anchor="nw", text="EXAMPLE", fill="#FF9400", font=("Inter Bold", -32))
-        canvas.create_text(29.0, 23.0, anchor="nw", text="Docs Printing Pricelist:", fill="#FFFFFF", font=("Inter Bold", -32))
+        canvas.create_text(29.0, 23.0, anchor="nw", text="Docs Printing Price list:", fill="#FFFFFF", font=("Inter Bold", -32))
 
         canvas.create_text(71.0, 128.0, anchor="nw", text="Black & White:", fill="#000000", font=("Inter Bold", -20))
         canvas.create_text(71.0, 248.0, anchor="nw", text="Partially Colored:", fill="#000000", font=("Inter Bold", -20))

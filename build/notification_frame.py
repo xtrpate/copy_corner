@@ -1,9 +1,6 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Button, PhotoImage, Label, Frame, Scrollbar, messagebox, ttk, Toplevel, Text
-import tkinter as tk # Use tk alias
-import math
-import sys
-import subprocess
+from tkinter import Canvas, Button, PhotoImage, Label, Frame, messagebox, ttk, Toplevel, Text
+import tkinter as tk
 import mysql.connector
 from datetime import datetime
 from utils import get_db_connection, round_rectangle
@@ -79,7 +76,7 @@ class NotificationFrame(tk.Frame):
         self.fullname = controller.fullname # Though not used directly here
 
         # --- Resize window for this specific frame ---
-        controller.geometry("829x504") # Match original size
+        # controller.geometry("829x504") # Match original size
 
         self.canvas = Canvas(self, bg=WHITE, height=504, width=829, bd=0, highlightthickness=0, relief="ridge")
         self.canvas.place(x=0, y=0)
@@ -88,7 +85,7 @@ class NotificationFrame(tk.Frame):
         try:
             # Load icons used in this frame
             self.icon_edit = PhotoImage(file=relative_to_assets("account.png"))
-            self.icon_bell = PhotoImage(file=relative_to_assets("image_14.png")) # Printer icon?
+            self.icon_bell = PhotoImage(file=relative_to_assets("image_13.png")) # Printer icon?
             self.icon_sheet = PhotoImage(file=relative_to_assets("image_15.png")) # Pricelist icon?
             self.icon_help = PhotoImage(file=relative_to_assets("image_16.png")) # Help icon?
         except tk.TclError as e:
@@ -162,7 +159,7 @@ class NotificationFrame(tk.Frame):
     def clear_read_notifications(self):
         """Marks all currently 'Unread' notifications for the user as 'Read'."""
         if self.user_id is None: return
-        conn = get_db_connection();
+        conn = get_db_connection()
         if not conn: return
         try:
             cursor = conn.cursor()
