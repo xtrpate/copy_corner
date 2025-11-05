@@ -61,8 +61,10 @@ def fetch_job_details(job_id):
          messagebox.showerror("Error", f"An unexpected error occurred fetching details: {e}")
          return None
     finally:
-        if cursor: cursor.close()
-        if conn and conn.is_connected(): conn.close()
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
     return details
 
 # --- **** MODIFIED: Record Payment and Update Status **** ---
@@ -102,13 +104,17 @@ def record_payment_and_update_status(job_id, payment_amount, payment_method, gca
 
         # 2. Update print_jobs status to 'Paid'
         # Optional: Also update payment_method in print_jobs if you still want it there for quick viewing
+        # Set the new status based on the payment method
+        new_status = "Cash" if payment_method == "Cash" else "Paid"
+
+        # Update the query to use the new_status variable
         update_query = """
             UPDATE print_jobs
-            SET status = 'Paid',
-                payment_method = %s  -- Keep this updated for easier display elsewhere? (Optional)
+            SET status = %s, 
+                payment_method = %s
             WHERE job_id = %s AND status = 'Approved'
         """
-        cursor.execute(update_query, (payment_method, job_id)) # Pass payment_method again
+        cursor.execute(update_query, (new_status, payment_method, job_id))
         affected_rows = cursor.rowcount
 
         # Commit transaction if both operations seem successful
@@ -117,7 +123,7 @@ def record_payment_and_update_status(job_id, payment_amount, payment_method, gca
 
 
         if affected_rows > 0:
-            messagebox.showinfo("Payment Recorded", f"Payment recorded successfully for Job #{job_id}.\nStatus updated to 'Paid'.")
+            messagebox.showinfo("Payment Successfully", f"Payment successfully.")
             return True
         else:
             # This case means the payment was inserted, but the job status wasn't 'Approved'
@@ -139,8 +145,10 @@ def record_payment_and_update_status(job_id, payment_amount, payment_method, gca
             conn.rollback()
         return False
     finally:
-        if cursor: cursor.close()
-        if conn and conn.is_connected(): conn.close()
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
 # --- **** END MODIFICATION **** ---
 
 
@@ -184,41 +192,58 @@ class PaymentWindow(Tk):
         self.canvas.create_text(20, header_height / 2, anchor="w", text="Payment Method:",
                                 fill="#FFFFFF", font=("Inter Bold", 24))
         # Content Area setup
-        content_y_start = header_height + 20; label_x = 30; value_x = 180
+        content_y_start = header_height + 20
+        label_x = 30
+        value_x = 180
         # Job Details Labels
-        row_y = content_y_start; details_font = ("Inter", 11); details_bold_font = ("Inter Bold", 11)
+        row_y = content_y_start
+        details_font = ("Inter", 11)
+        details_bold_font = ("Inter Bold", 11)
         Label(self, text="File Name:", font=details_bold_font, bg="#FFFFFF").place(x=label_x, y=row_y)
-        Label(self, text=self.job_details['file_name'], font=details_font, bg="#FFFFFF", anchor="w", wraplength=window_width-value_x-20).place(x=value_x, y=row_y); row_y += 25
-        Label(self, text="Color Option:", font=details_bold_font, bg="#FFFFFF").place(x=label_x, y=row_y)
-        Label(self, text=self.job_details['color_option'], font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y); row_y += 25
+        Label(self, text=self.job_details['file_name'], font=details_font, bg="#FFFFFF", anchor="w", wraplength=window_width-value_x-20).place(x=value_x, y=row_y)
+        row_y += 25
+        Label(self, text="Color:", font=details_bold_font, bg="#FFFFFF").place(x=label_x, y=row_y)
+        Label(self, text=self.job_details['color_option'], font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y)
+        row_y += 25
         Label(self, text="Paper Size:", font=details_bold_font, bg="#FFFFFF").place(x=label_x, y=row_y)
-        Label(self, text=self.job_details['paper_size'], font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y); row_y += 25
+        Label(self, text=self.job_details['paper_size'], font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y)
+        row_y += 25
         Label(self, text="Pages:", font=details_bold_font, bg="#FFFFFF").place(x=label_x, y=row_y)
-        Label(self, text=str(self.job_details['pages']), font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y); row_y += 25
+        Label(self, text=str(self.job_details['pages']), font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y)
+        row_y += 25
         Label(self, text="Copies:", font=details_bold_font, bg="#FFFFFF").place(x=label_x, y=row_y)
-        Label(self, text=str(self.job_details['copies']), font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y); row_y += 35
+        Label(self, text=str(self.job_details['copies']), font=details_font, bg="#FFFFFF", anchor="w").place(x=value_x, y=row_y)
+        row_y += 35
         # Total Amount Display
         amount_text = f"₱{self.payment_amount:.2f}"
         Label(self, text="Total Amount:", font=("Inter Bold", 16), bg="#FFFFFF").place(x=label_x, y=row_y)
-        Label(self, text=amount_text, font=("Inter Bold", 20, "bold"), bg="#FFFFFF", fg="#000000").place(x=value_x, y=row_y - 3); row_y += 50
+        Label(self, text=amount_text, font=("Inter Bold", 20, "bold"), bg="#FFFFFF", fg="#000000").place(x=value_x, y=row_y - 3)
+        row_y += 50
         # Payment Method Selection
         Label(self, text="Select Method:", font=("Inter Bold", 14), bg="#FFFFFF").place(x=label_x, y=row_y)
         self.payment_method_var = StringVar(value="Cash")
         Radiobutton(self, text="Cash", variable=self.payment_method_var, value="Cash", font=("Inter", 12), bg="#FFFFFF", anchor="w", command=self._update_payment_fields).place(x=label_x + 20, y=row_y + 30)
-        Radiobutton(self, text="GCash", variable=self.payment_method_var, value="Gcash", font=("Inter", 12), bg="#FFFFFF", anchor="w", command=self._update_payment_fields).place(x=label_x + 120, y=row_y + 30); row_y += 65
+        Radiobutton(self, text="GCash", variable=self.payment_method_var, value="Gcash", font=("Inter", 12), bg="#FFFFFF", anchor="w", command=self._update_payment_fields).place(x=label_x + 120, y=row_y + 30)
+        row_y += 65
         # GCash Fields Frame
         self.gcash_frame = Frame(self, bg="#FFFFFF")
         Label(self.gcash_frame, text="GCash Name:", font=details_font, bg="#FFFFFF").grid(row=0, column=0, sticky="w", pady=2)
-        self.gcash_name_entry = Entry(self.gcash_frame, font=details_font, bd=1, relief="solid", width=30); self.gcash_name_entry.grid(row=0, column=1, sticky="w", padx=5, pady=2)
+        self.gcash_name_entry = Entry(self.gcash_frame, font=details_font, bd=1, relief="solid", width=30)
+        self.gcash_name_entry.grid(row=0, column=1, sticky="w", padx=5, pady=2)
         Label(self.gcash_frame, text="GCash Number:", font=details_font, bg="#FFFFFF").grid(row=1, column=0, sticky="w", pady=2)
-        self.gcash_number_entry = Entry(self.gcash_frame, font=details_font, bd=1, relief="solid", width=30); self.gcash_number_entry.grid(row=1, column=1, sticky="w", padx=5, pady=2)
+        self.gcash_number_entry = Entry(self.gcash_frame, font=details_font, bd=1, relief="solid", width=30)
+        self.gcash_number_entry.grid(row=1, column=1, sticky="w", padx=5, pady=2)
         Label(self.gcash_frame, text="Screenshot:", font=details_font, bg="#FFFFFF").grid(row=2, column=0, sticky="w", pady=2)
-        self.screenshot_button = Button(self.gcash_frame, text="Browse...", font=("Inter", 9), command=self._browse_screenshot, bg="#000000", fg="#FFFFFF", activebackground="#333333", activeforeground="#FFFFFF", bd=1, relief="raised"); self.screenshot_button.grid(row=2, column=1, sticky="w", padx=5, pady=2)
-        self.screenshot_label = Label(self.gcash_frame, text="No file selected.", font=("Inter Italic", 9), bg="#FFFFFF", fg="grey"); self.screenshot_label.grid(row=2, column=2, sticky="w", padx=5, pady=2)
+        self.screenshot_button = Button(self.gcash_frame, text="Browse...", font=("Inter", 9), command=self._browse_screenshot, bg="#000000", fg="#FFFFFF", activebackground="#333333", activeforeground="#FFFFFF", bd=1, relief="raised")
+        self.screenshot_button.grid(row=2, column=1, sticky="w", padx=5, pady=2)
+        self.screenshot_label = Label(self.gcash_frame, text="No file selected.", font=("Inter Italic", 9), bg="#FFFFFF", fg="grey")
+        self.screenshot_label.grid(row=2, column=2, sticky="w", padx=5, pady=2)
         # Buttons
         button_y = window_height - 60
-        self.confirm_button = Button(self, text="Confirm Payment", font=("Inter Bold", 12), command=self.confirm_payment, relief="raised", bd=1, bg="#000000", fg="#FFFFFF", activebackground="#333333", activeforeground="#FFFFFF", cursor="hand2"); self.confirm_button.place(x=window_width - 180, y=button_y, width=150, height=35)
-        self.cancel_button = Button(self, text="Cancel", font=("Inter Bold", 12), command=self.destroy, relief="raised", bd=1, bg="#000000", fg="#FFFFFF", activebackground="#333333", activeforeground="#FFFFFF", cursor="hand2"); self.cancel_button.place(x=label_x, y=button_y, width=100, height=35)
+        self.confirm_button = Button(self, text="Confirm Payment", font=("Inter Bold", 12), command=self.confirm_payment, relief="raised", bd=1, bg="#000000", fg="#FFFFFF", activebackground="#333333", activeforeground="#FFFFFF", cursor="hand2")
+        self.confirm_button.place(x=window_width - 180, y=button_y, width=150, height=35)
+        self.cancel_button = Button(self, text="Cancel", font=("Inter Bold", 12), command=self.destroy, relief="raised", bd=1, bg="#000000", fg="#FFFFFF", activebackground="#333333", activeforeground="#FFFFFF", cursor="hand2")
+        self.cancel_button.place(x=label_x, y=button_y, width=100, height=35)
 
         self._update_payment_fields() # Initialize field visibility
 
@@ -254,15 +279,18 @@ class PaymentWindow(Tk):
         final_screenshot_db_path = None # Path to store in DB (could be relative or absolute)
 
         if not selected_method:
-             messagebox.showwarning("Selection Missing", "Please select a payment method."); return
+             messagebox.showwarning("Selection Missing", "Please select a payment method.")
+             return
 
         if selected_method == "Gcash":
             gcash_name = self.gcash_name_entry.get().strip()
             gcash_number = self.gcash_number_entry.get().strip()
             if not gcash_name or not gcash_number:
-                messagebox.showwarning("GCash Details Missing", "Please enter GCash Name and Number."); return
+                messagebox.showwarning("GCash Details Missing", "Please enter GCash Name and Number.")
+                return
             if not self.selected_screenshot_path:
-                messagebox.showwarning("Screenshot Missing", "Please select the payment screenshot file."); return
+                messagebox.showwarning("Screenshot Missing", "Please select the payment screenshot file.")
+                return
 
             # --- Save Screenshot ---
             try:

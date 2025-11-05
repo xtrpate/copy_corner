@@ -1,10 +1,10 @@
 import mysql.connector
 from tkinter import messagebox, Canvas
-import os # <-- Added
-import smtplib # <-- Added
-from email.mime.text import MIMEText # <-- Added
-from email.mime.multipart import MIMEMultipart # <-- Added
-from dotenv import load_dotenv # <-- Added
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
 
 load_dotenv() # Load environment variables once when utils is imported
 
@@ -13,10 +13,10 @@ def get_db_connection():
     """Establishes connection to the MySQL database."""
     try:
         return mysql.connector.connect(
-            host=os.getenv("DB_HOST", "localhost"), # Use env var or default
-            user=os.getenv("DB_USER", "root"),       # Use env var or default
-            password=os.getenv("DB_PASS", ""),       # Use env var or default
-            database=os.getenv("DB_NAME", "copy_corner_db") # Use env var or default
+            host=os.getenv("DB_HOST", "localhost"),
+            user=os.getenv("DB_USER", "root"),
+            password=os.getenv("DB_PASS", ""),
+            database=os.getenv("DB_NAME", "copy_corner_db")
         )
     except mysql.connector.Error as err:
         messagebox.showerror("Database Error", f"Failed to connect to database: {err}")
@@ -28,11 +28,11 @@ def round_rectangle(canvas: Canvas, x1: float, y1: float, x2: float, y2: float, 
     points = [
         x1 + r, y1, x2 - r, y1, x2, y1, x2, y1 + r, x2, y2 - r, x2, y2,
         x2 - r, y2, x1 + r, y2, x1, y2, x1, y2 - r, x1, y1 + r, x1, y1,
-        x1 + r, y1 # Explicitly close path point for some Tk versions
+        x1 + r, y1 # Explicitly close path point
     ]
     return canvas.create_polygon(points, smooth=True, **kwargs)
 
-# --- Send Verification Email --- # <-- NEW SECTION ADDED
+# --- Send Verification Email ---
 def send_verification_email(user_email, otp_code, email_subject="Email Verification", context="verify"):
     """Sends the OTP code to the user's email."""
 
@@ -44,7 +44,6 @@ def send_verification_email(user_email, otp_code, email_subject="Email Verificat
                              "Email credentials not found in .env file (EMAIL_USER, EMAIL_PASS).")
         return False
 
-    # Customize message slightly based on context
     if context == "reset":
         intro_line = "You requested to reset your password. Please use the following code to verify your email address:"
         note_line = "If you did not request this, please ignore this email."

@@ -2,6 +2,7 @@ from pathlib import Path
 from tkinter import Canvas, Button, PhotoImage, messagebox
 import tkinter as tk
 
+# We import PrinterFrame to be able to navigate back to it
 from printer_frame import PrinterFrame
 
 OUTPUT_PATH = Path(__file__).parent
@@ -61,7 +62,9 @@ class PricesFrame(tk.Frame):
         canvas.create_text(87.0, 212.0, anchor="nw", text="Long Size                 ₱3.00/per page", fill="#000000", font=("Inter Bold", -14))
         canvas.create_text(86.0, 282.0, anchor="nw", text="Short Size                ₱7.00/per page", fill="#000000", font=("Inter Bold", -14))
         canvas.create_text(86.0, 306.0, anchor="nw", text="A4  Size                     ₱7.00/per page", fill="#000000", font=("Inter Bold", -14))
+        # --- This is the price I will use: ₱8.00 ---
         canvas.create_text(86.0, 332.0, anchor="nw", text="Long  Size                 ₱8.00/per page", fill="#000000", font=("Inter Bold", -14))
+        # ---
         canvas.create_text(88.0, 402.0, anchor="nw", text="Short Size                ₱10.00/per page", fill="#000000", font=("Inter Bold", -14))
         canvas.create_text(88.0, 425.0, anchor="nw", text="A4  Size                     ₱10.00/per page", fill="#000000", font=("Inter Bold", -14))
         canvas.create_text(88.0, 448.0, anchor="nw", text="Long  Size                 ₱15.00/per page", fill="#000000", font=("Inter Bold", -14))

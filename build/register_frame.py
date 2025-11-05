@@ -106,8 +106,8 @@ class RegisterFrame(tk.Frame):
         self.canvas.create_window(456, 220, window=self.username_entry, width=160, height=25)
         self.canvas.create_window(456, 277, window=self.contact_entry, width=160, height=25)
         self.canvas.create_window(456, 334, window=self.email_entry, width=160, height=25)
-        self.canvas.create_window(456, 391, window=self.password_entry, width=140, height=25)
-        self.canvas.create_window(456, 448, window=self.confirm_entry, width=140, height=25)
+        self.canvas.create_window(456, 391, window=self.password_entry, width=125, height=25)
+        self.canvas.create_window(456, 448, window=self.confirm_entry, width=125, height=25)
 
         # Eye Icons for Password Fields
         pw_eye_icon_id = self.canvas.create_image(520, 382, anchor="nw", image=self.eye_slash_image)
@@ -232,7 +232,8 @@ class RegisterFrame(tk.Frame):
             self.canvas.tag_unbind(tag, "<Button-1>")
             self.canvas.tag_unbind(tag, "<Enter>")
             self.canvas.tag_unbind(tag, "<Leave>")
-            self.canvas.itemconfig(tag, cursor="") # Reset cursor on tags
+
+        self.config(cursor="")
         self.update_idletasks()
 
         # --- Generate and Send OTP ---
